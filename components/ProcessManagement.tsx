@@ -7,7 +7,7 @@ import { Modal } from './Modal';
 import { EyeIcon, SearchIcon } from './icons';
 import { ProcessDetails } from './ProcessDetails';
 import { JustificationModal } from './JustificationModal';
-import { generateChangeLog } from '../utils';
+import { generateChangeLog } from '@/lib/utils';
 // FIX: Removed unused import for DataContext hook. Data is now passed via props.
 // import { useData } from '../contexts/DataContext';
 
@@ -98,7 +98,7 @@ const ProcessForm: React.FC<{ process?: Process; onSave: (process: Process) => v
 };
 
 // FIX: Updated component signature to accept props instead of using `useData`.
-export default function ProcessManagement({ processes, setProcesses, onSelectProcess }: ProcessManagementProps) {
+export default function ProcessManagement({ processes = [], setProcesses, onSelectProcess }: ProcessManagementProps) {
     // const { processes, setProcesses } = useData(); // Data now comes from props.
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [editingProcess, setEditingProcess] = useState<Process | undefined>(undefined);
@@ -116,19 +116,19 @@ export default function ProcessManagement({ processes, setProcesses, onSelectPro
             setIsFormVisible(false);
         }
     };
-    
+
     const handleConfirmSave = (justification: string) => {
         if (!pendingProcessData || !editingProcess) return;
 
         const changes = generateChangeLog(editingProcess, pendingProcessData, processLabels);
-        
+
         const historyEntry: HistoryEntry = {
             timestamp: new Date().toISOString(),
             user: 'Admin', // Mock user
             justification,
             changes
         };
-        
+
         const updatedProcess = {
             ...pendingProcessData,
             history: [...pendingProcessData.history, historyEntry]
@@ -185,11 +185,11 @@ export default function ProcessManagement({ processes, setProcesses, onSelectPro
             <Modal isOpen={isFormVisible} onClose={() => setIsFormVisible(false)} title={editingProcess ? 'Editar Processo' : 'Novo Processo'}>
                 <ProcessForm process={editingProcess} onSave={handleSave} onCancel={() => setIsFormVisible(false)} />
             </Modal>
-            
+
             {isJustificationModalOpen && <JustificationModal onClose={() => setIsJustificationModalOpen(false)} onConfirm={handleConfirmSave} />}
 
             {viewingProcess && <ProcessDetails process={viewingProcess} onClose={() => setViewingProcess(null)} />}
-            
+
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-gray-700">

@@ -1,9 +1,10 @@
-import React from 'react';
-import type { NextPage } from 'next';
-import Dashboard from '../components/Dashboard';
-import { useData } from '../contexts/DataContext';
+"use client";
 
-const DashboardPage: NextPage = () => {
+import React from 'react';
+import Dashboard from '@/components/Dashboard';
+import { useData } from '@/contexts/DataContext';
+
+const DashboardPage = () => {
     const { processes, risks, controls } = useData();
 
     return <Dashboard processes={processes} risks={risks} controls={controls} />;

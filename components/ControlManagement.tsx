@@ -8,7 +8,7 @@ import { Modal } from './Modal';
 import { EyeIcon, SearchIcon, ChevronLeftIcon } from './icons';
 import { ControlDetails } from './ControlDetails';
 import { JustificationModal } from './JustificationModal';
-import { generateChangeLog } from '../utils';
+import { generateChangeLog } from '@/lib/utils';
 // FIX: Removed unused import for DataContext hook. Data is now passed via props.
 // import { useData } from '../contexts/DataContext';
 
@@ -178,19 +178,19 @@ export default function ControlManagement({ risk, controls: riskControls, setCon
             setIsFormVisible(false);
         }
     };
-    
+
     const handleConfirmSave = (justification: string) => {
         if (!pendingControlData || !editingControl) return;
 
         const changes = generateChangeLog(editingControl, pendingControlData, controlLabels);
-        
+
         const historyEntry: HistoryEntry = {
             timestamp: new Date().toISOString(),
             user: 'Admin', // Mock user
             justification,
             changes
         };
-        
+
         const updatedControl = {
             ...pendingControlData,
             history: [...pendingControlData.history, historyEntry]

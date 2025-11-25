@@ -2,7 +2,7 @@ import React from 'react';
 import type { Risk } from '../types';
 import { Modal } from './Modal';
 import { DetailsSection, DetailItem } from './DetailsDisplay';
-import { getInherentRiskLevel, getResidualRiskLevel } from '../constants';
+import { getInherentRiskLevel, getResidualRiskLevel } from '@/lib/risk-utils';
 
 interface RiskDetailsProps {
     risk: Risk;
@@ -16,7 +16,7 @@ const formatTimestamp = (dateString: string) => new Date(dateString).toLocaleStr
 export const RiskDetails: React.FC<RiskDetailsProps> = ({ risk, onClose }) => {
     const inherentRiskDetails = getInherentRiskLevel(risk.inherentRisk);
     const residualRiskDetails = getResidualRiskLevel(risk.residualRisk);
-    
+
     return (
         <Modal isOpen={true} onClose={onClose} title={`Detalhes do Risco: ${risk.name}`}>
              <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -44,7 +44,7 @@ export const RiskDetails: React.FC<RiskDetailsProps> = ({ risk, onClose }) => {
                         </div>
                     } />
                 </DetailsSection>
-                
+
                 <DetailsSection title="Avaliação de Controles">
                     <DetailItem label="O Controle é Eficaz?" value={risk.isControlEffective ? 'Sim' : 'Não'} />
                     <DetailItem label="O Controle é Proporcional?" value={risk.isControlProportional ? 'Sim' : 'Não'} />

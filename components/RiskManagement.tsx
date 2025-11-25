@@ -1,18 +1,14 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-// FIX: Removed unused import for Next.js Link component.
-// import Link from 'next/link';
 import type { Process, Risk, RiskDimension, HistoryEntry } from '../types';
-import { PROBABILITY_IMPACT_SCALE, RISK_TYPES, RISK_ASSOCIATIONS, RISK_DIMENSIONS, RISK_RESPONSES, getInherentRiskLevel, getResidualRiskLevel } from '../constants';
+import { PROBABILITY_IMPACT_SCALE, RISK_TYPES, RISK_ASSOCIATIONS, RISK_DIMENSIONS, RISK_RESPONSES } from '../constants';
+import { getInherentRiskLevel, getResidualRiskLevel } from '@/lib/risk-utils';
 import { Modal } from './Modal';
 import { EyeIcon, SearchIcon, ChevronLeftIcon } from './icons';
 import { RiskDetails } from './RiskDetails';
 import { JustificationModal } from './JustificationModal';
-import { generateChangeLog } from '../utils';
-// FIX: Removed unused import for DataContext hook. Data is now passed via props.
-// import { useData } from '../contexts/DataContext';
+import { generateChangeLog } from '@/lib/utils';
 
-// FIX: Extended props interface to accept all necessary data and handlers from the parent component.
 interface RiskManagementProps {
     process: Process;
     risks: Risk[];
@@ -67,7 +63,7 @@ const RiskForm: React.FC<{ process: Process, risk?: Risk; onSave: (risk: Risk) =
             if (formData.isControlAdequate) fac -= 0.2;
         }
         fac = Math.max(0.2, Math.round(fac * 10) / 10);
-        
+
         const residualRisk = inherentRisk * fac;
         const residualRiskLevel = getResidualRiskLevel(residualRisk).level;
         let maxImplementationDate = '';
@@ -82,7 +78,7 @@ const RiskForm: React.FC<{ process: Process, risk?: Risk; onSave: (risk: Risk) =
             identificationDate.setMonth(identificationDate.getMonth() + 36);
             maxImplementationDate = identificationDate.toISOString().split('T')[0];
         }
-        
+
         setFormData(prev => ({ ...prev, inherentRisk, fac, residualRisk, maxImplementationDate }));
     }, [formData.probability, formData.impact, formData.isControlEffective, formData.isControlProportional, formData.isControlReasonable, formData.isControlAdequate, formData.identificationDate]);
 
@@ -91,7 +87,7 @@ const RiskForm: React.FC<{ process: Process, risk?: Risk; onSave: (risk: Risk) =
         const checked = (e.target as HTMLInputElement).checked;
         setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : (type === 'range' ? parseInt(value) : value) }));
     };
-    
+
     const handleDimensionChange = (dimension: RiskDimension) => {
         setFormData(prev => ({ ...prev, dimensions: prev.dimensions.includes(dimension) ? prev.dimensions.filter(d => d !== dimension) : [...prev.dimensions, dimension]}));
     }
@@ -125,7 +121,7 @@ const RiskForm: React.FC<{ process: Process, risk?: Risk; onSave: (risk: Risk) =
                     <select id="r-association" name="association" value={formData.association} onChange={handleChange} className={formInputStyle}>{RISK_ASSOCIATIONS.map(a => <option key={a} value={a}>{a}</option>)}</select>
                 </div>
             </div>
-            
+
              {/* Causes & Consequences */}
             <div>
                  <label className="block text-sm font-medium mb-1">Causas do Risco</label>
@@ -178,7 +174,7 @@ const RiskForm: React.FC<{ process: Process, risk?: Risk; onSave: (risk: Risk) =
                     <span className={`px-2 py-1 text-xs text-white rounded-full ${inherentRiskDetails.color}`}>{inherentRiskDetails.level}</span>
                 </div>
             </div>
-            
+
             {/* Control Evaluation */}
             <div className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg space-y-2">
                  <h4 className="font-semibold">Avaliação de Controles</h4>
@@ -188,7 +184,7 @@ const RiskForm: React.FC<{ process: Process, risk?: Risk; onSave: (risk: Risk) =
                  <div className="flex items-center gap-2"><input type="checkbox" id="isControlAdequate" name="isControlAdequate" checked={formData.isControlAdequate} onChange={handleChange} disabled={!formData.isControlEffective} className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" /><label htmlFor="isControlAdequate" className={!formData.isControlEffective ? 'text-gray-400 dark:text-gray-500' : ''}>O Controle é Adequado?</label></div>
                  <p className="text-sm pt-2">Fator de Avaliação (FAC): <strong>{formData.fac}</strong></p>
             </div>
-            
+
             {/* Residual Risk Calculation Display */}
             <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
                 <div>
@@ -212,7 +208,7 @@ const RiskForm: React.FC<{ process: Process, risk?: Risk; onSave: (risk: Risk) =
                 </div>
                  <div className="flex items-center gap-2 mt-2"><input type="checkbox" name="isLgpdRelated" id="isLgpdRelated" checked={formData.isLgpdRelated} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" /><label htmlFor="isLgpdRelated">Relação com LGPD?</label></div>
             </div>
-            
+
             <div className="flex justify-end gap-4 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                 <button type="button" onClick={onCancel} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">Cancelar</button>
                 <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Salvar</button>
@@ -245,19 +241,19 @@ export default function RiskManagement({ process, risks: processRisks, setRisks,
             setIsFormVisible(false);
         }
     };
-    
+
     const handleConfirmSave = (justification: string) => {
         if (!pendingRiskData || !editingRisk) return;
-        
+
         const changes = generateChangeLog(editingRisk, pendingRiskData, riskLabels);
-        
+
         const historyEntry: HistoryEntry = {
             timestamp: new Date().toISOString(),
             user: 'Admin', // Mock user
             justification,
             changes
         };
-        
+
         const updatedRisk = {
             ...pendingRiskData,
             history: [...pendingRiskData.history, historyEntry]
@@ -326,7 +322,7 @@ export default function RiskManagement({ process, risks: processRisks, setRisks,
             {isJustificationModalOpen && <JustificationModal onClose={() => setIsJustificationModalOpen(false)} onConfirm={handleConfirmSave} />}
 
             {viewingRisk && <RiskDetails risk={viewingRisk} onClose={() => setViewingRisk(null)} />}
-            
+
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-gray-700">
