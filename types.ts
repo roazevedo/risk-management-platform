@@ -62,6 +62,7 @@ export type ControlStatus = 'on-time' | 'near-due' | 'overdue';
 export type ControlType = 'Preventivo' | 'Corretivo';
 export type ControlNature = 'Manual' | 'Automatizado' | 'Híbrido';
 export type ControlRelation = 'Direto' | 'Indireto';
+export type ControlNewOrModified = 'Novo' | 'Modificado';
 
 export interface Control {
     id: string;
@@ -69,7 +70,7 @@ export interface Control {
     name: string;
     implemented: boolean;
     status: ControlStatus;
-    newOrModified: 'Novo' | 'Modificado';
+    newOrModified: ControlNewOrModified;
     type: ControlType;
     nature: ControlNature;
     relationToRisk: ControlRelation;

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import type { Process, Risk, Control } from '../types';
 
@@ -28,14 +30,25 @@ interface DataContextType {
     setControls: React.Dispatch<React.SetStateAction<Control[]>>;
 }
 
-const DataContext = createContext<DataContextType | undefined>(undefined);
+const initialContextValue: DataContextType = {
+    isLoggedIn: false,
+    setIsLoggedIn: () => {},
+    processes: [],
+    setProcesses: () => {},
+    risks: [],
+    setRisks: () => {},
+    controls: [],
+    setControls: () => {},
+};
+
+const DataContext = createContext<DataContextType>(initialContextValue);
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [processes, setProcesses] = useState<Process[]>(initialProcesses);
     const [risks, setRisks] = useState<Risk[]>(initialRisks);
     const [controls, setControls] = useState<Control[]>(initialControls);
-    
+
     const value = {
         isLoggedIn,
         setIsLoggedIn,
@@ -52,8 +65,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
 export const useData = (): DataContextType => {
     const context = useContext(DataContext);
-    if (context === undefined) {
-        throw new Error('useData must be used within a DataProvider');
-    }
+    // if (context === undefined) {
+    //     throw new Error('useData must be used within a DataProvider');
+    // }
     return context;
 };

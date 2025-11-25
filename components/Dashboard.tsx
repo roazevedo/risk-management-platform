@@ -1,9 +1,7 @@
-
-
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import type { Process, Risk, Control } from '../types';
-import { getInherentRiskLevel, getResidualRiskLevel } from '../constants';
+import { getInherentRiskLevel, getResidualRiskLevel } from '@/lib/risk-utils';
 import { RiskIcon, ProcessIcon, ControlIcon } from './icons';
 
 interface DashboardProps {
@@ -66,7 +64,7 @@ const ResidualRiskMatrix: React.FC<{ risks: Risk[] }> = ({ risks }) => {
             <h3 className="text-lg font-semibold mb-2 text-center text-gray-800 dark:text-gray-200">Matriz de Risco Residual por Contagem</h3>
             <p className="text-sm text-center text-gray-500 dark:text-gray-400 mb-4">Nível de Risco Inerente vs. Fator de Avaliação de Controles</p>
             <div className="grid grid-cols-[auto_repeat(5,minmax(80px,1fr))] gap-px bg-gray-300 dark:bg-gray-600 border border-gray-300 dark:border-gray-600">
-                
+
                 {/* Header Row */}
                 <div className="p-1 bg-gray-50 dark:bg-gray-700"></div> {/* Top-left empty cell */}
                 {controlFactors.map(factor => (
@@ -88,8 +86,8 @@ const ResidualRiskMatrix: React.FC<{ risks: Risk[] }> = ({ risks }) => {
                         const count = riskCounts.get(key) || 0;
 
                         return (
-                            <div 
-                                key={`${riskLevel.label}-${factor.label}`} 
+                            <div
+                                key={`${riskLevel.label}-${factor.label}`}
                                 className={`p-1 min-h-[60px] flex flex-col justify-center items-center text-white text-center ${color}`}
                                 title={`${count} risco(s) nesta categoria. Risco Residual da Célula: ${residualRiskValue.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}`}
                             >
@@ -129,13 +127,13 @@ export default function Dashboard({ processes, risks, controls }: DashboardProps
         }
         return acc;
     }, [] as { name: string; value: number }[]);
-    
+
     const COLORS = ['#4ade80', '#facc15']; // Green, Yellow
 
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">Dashboard de Gestão de Riscos</h1>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                  <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md flex items-center space-x-4">
                     <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full"><ProcessIcon className="h-8 w-8 text-blue-500" /></div>
