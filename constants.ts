@@ -17,3 +17,54 @@ export const PROBABILITY_IMPACT_SCALE = [
 export const CONTROL_TYPES: ControlType[] = ['Preventivo', 'Corretivo'];
 export const CONTROL_NATURES: ControlNature[] = ['Manual', 'Automatizado', 'Híbrido'];
 export const CONTROL_RELATIONS: ControlRelation[] = ['Direto', 'Indireto'];
+
+export const riskLabels: Record<string, string> = {
+  id: "ID",
+  processId: "ID do Processo",
+  name: "Nome",
+  identificationDate: "Data de Identificação",
+  type: "Tipo",
+  association: "Associação",
+  causes: "Causas",
+  consequences: "Consequências",
+  dimensions: "Dimensões",
+  probability: "Probabilidade",
+  probabilityJustification: "Justificativa da Probabilidade",
+  impact: "Impacto",
+  impactJustification: "Justificativa do Impacto",
+  inherentRisk: "Risco Inerente",
+  controlsExist: "Controles Existem",
+  isControlEffective: "Controle Eficaz",
+  isControlProportional: "Controle Proporcional",
+  isControlReasonable: "Controle Razoável",
+  isControlAdequate: "Controle Adequado",
+  fac: "FAC",
+  residualRisk: "Risco Residual",
+  suggestedResponse: "Resposta Sugerida",
+  maxImplementationDate: "Data Máxima de Implantação",
+  isLgpdRelated: "Relação com LGPD",
+  history: "Histórico"
+};
+
+// ... (outras constantes existentes: RISK_TYPES, riskLabels, etc.)
+
+export const controlLabels: Record<string, string> = {
+  id: "ID",
+  riskId: "ID do Risco",
+  name: "Nome",
+  implemented: "Implementado",
+  status: "Status",
+  newOrModified: "Novo ou Modificado",
+  type: "Tipo",
+  nature: "Natureza",
+  relationToRisk: "Relação com Risco",
+  responsible: "Responsável",
+  implementationMethod: "Método de Implantação",
+  macroSteps: "Macroetapas",
+  plannedStartDate: "Data de Início Prevista",
+  plannedEndDate: "Data de Fim Prevista",
+  actualEndDate: "Data de Fim Real",
+  involvedSectors: "Setores Envolvidos",
+  adequacyAnalysis: "Análise de Adequação",
+  history: "Histórico"
+};
