@@ -36,7 +36,7 @@ const formatTimestamp = (dateString: string) => new Date(dateString).toLocaleStr
 
 export const ControlDetails: React.FC<ControlDetailsProps> = ({ control, onClose }) => {
     const statusInfo = getStatusInfo(control.plannedEndDate, control.implemented, control.actualEndDate);
-    
+
     return (
         <Modal isOpen={true} onClose={onClose} title={`Detalhes do Controle: ${control.name}`}>
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -61,7 +61,7 @@ export const ControlDetails: React.FC<ControlDetailsProps> = ({ control, onClose
                     <DetailItem label="Conclusão Real" value={formatDateForDetails(control.actualEndDate)} />
                     <DetailItem label="Órgãos/Setores Envolvidos" value={control.involvedSectors.join(', ')} />
                 </DetailsSection>
-                
+
                 <DetailsSection title="Análise de Adequação">
                     <DetailItem label="Análise EGR de Adequação dos Controles" value={<p className="whitespace-pre-wrap">{control.adequacyAnalysis}</p>} fullWidth />
                 </DetailsSection>
