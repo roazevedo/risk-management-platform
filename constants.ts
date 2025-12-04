@@ -1,11 +1,37 @@
+// app/lib/constants.ts
 
-import type { RiskType, RiskAssociation, RiskDimension, RiskResponse, ControlType, ControlNature, ControlRelation } from './types';
+// --- RISCOS ---
 
-export const RISK_TYPES: RiskType[] = ['Operacional', 'Suporte'];
-export const RISK_ASSOCIATIONS: RiskAssociation[] = ['Processo', 'Projeto'];
-export const RISK_DIMENSIONS: RiskDimension[] = ['Operacional', 'Conformidade', 'Imagem', 'Estratégico', 'Sancionatório', 'Privacidade'];
-export const RISK_RESPONSES: RiskResponse[] = ['Aceitar', 'Compartilhar', 'Eliminar', 'Evitar', 'Potencializar', 'Reduzir'];
+// Usamos 'as const' para que o TypeScript entenda que esses valores são fixos e não apenas strings genéricas.
+export const RISK_TYPES = [
+    'Operacional',
+    'Suporte'
+] as const;
 
+export const RISK_ASSOCIATIONS = [
+    'Processo',
+    'Projeto'
+] as const;
+
+export const RISK_DIMENSIONS = [
+    'Operacional',
+    'Conformidade',
+    'Imagem',
+    'Estratégico',
+    'Sancionatório',
+    'Privacidade'
+] as const;
+
+export const RISK_RESPONSES = [
+    'Aceitar',
+    'Compartilhar',
+    'Eliminar',
+    'Evitar',
+    'Potencializar',
+    'Reduzir'
+] as const;
+
+// Escala não usa 'as const' porque é um array de objetos complexos
 export const PROBABILITY_IMPACT_SCALE = [
     { value: 1, label: 'Muito Baixa' },
     { value: 2, label: 'Baixa' },
@@ -14,57 +40,82 @@ export const PROBABILITY_IMPACT_SCALE = [
     { value: 5, label: 'Muito Alta' },
 ];
 
-export const CONTROL_TYPES: ControlType[] = ['Preventivo', 'Corretivo'];
-export const CONTROL_NATURES: ControlNature[] = ['Manual', 'Automatizado', 'Híbrido'];
-export const CONTROL_RELATIONS: ControlRelation[] = ['Direto', 'Indireto'];
+// --- CONTROLES ---
+
+export const CONTROL_TYPES = [
+    'Preventivo',
+    'Corretivo'
+] as const;
+
+export const CONTROL_NATURES = [
+    'Manual',
+    'Automatizado',
+    'Híbrido'
+] as const;
+
+export const CONTROL_RELATIONS = [
+    'Direto',
+    'Indireto'
+] as const;
+
+export const CONTROL_STATUS = [
+    'on-time',
+    'near-due',
+    'overdue'
+] as const;
+
+export const CONTROL_NEW_MODIFIED = [
+    'Novo',
+    'Modificado'
+] as const;
+
+// --- LABELS (Rótulos para exibição em tabelas/detalhes) ---
 
 export const riskLabels: Record<string, string> = {
-  id: "ID",
-  processId: "ID do Processo",
-  name: "Nome",
-  identificationDate: "Data de Identificação",
-  type: "Tipo",
-  association: "Associação",
-  causes: "Causas",
-  consequences: "Consequências",
-  dimensions: "Dimensões",
-  probability: "Probabilidade",
-  probabilityJustification: "Justificativa da Probabilidade",
-  impact: "Impacto",
-  impactJustification: "Justificativa do Impacto",
-  inherentRisk: "Risco Inerente",
-  controlsExist: "Controles Existem",
-  isControlEffective: "Controle Eficaz",
-  isControlProportional: "Controle Proporcional",
-  isControlReasonable: "Controle Razoável",
-  isControlAdequate: "Controle Adequado",
-  fac: "FAC",
-  residualRisk: "Risco Residual",
-  suggestedResponse: "Resposta Sugerida",
-  maxImplementationDate: "Data Máxima de Implantação",
-  isLgpdRelated: "Relação com LGPD",
-  history: "Histórico"
+    id: "ID",
+    processId: "ID do Processo",
+    name: "Nome",
+    identificationDate: "Data de Identificação",
+    type: "Tipo",
+    association: "Associação",
+    causes: "Causas",
+    consequences: "Consequências",
+    dimensions: "Dimensões",
+    probability: "Probabilidade",
+    probabilityJustification: "Justificativa da Probabilidade",
+    impact: "Impacto",
+    impactJustification: "Justificativa do Impacto",
+    inherentRisk: "Risco Inerente",
+    controlsExist: "Controles Existem",
+    isControlEffective: "Controle Eficaz",
+    isControlProportional: "Controle Proporcional",
+    isControlReasonable: "Controle Razoável",
+    isControlAdequate: "Controle Adequado",
+    fac: "FAC",
+    residualRisk: "Risco Residual",
+    suggestedResponse: "Resposta Sugerida",
+    maxImplementationDate: "Data Máxima de Implantação",
+    isLgpdRelated: "Relação com LGPD",
+    history: "Histórico"
 };
 
-// ... (outras constantes existentes: RISK_TYPES, riskLabels, etc.)
-
 export const controlLabels: Record<string, string> = {
-  id: "ID",
-  riskId: "ID do Risco",
-  name: "Nome",
-  implemented: "Implementado",
-  status: "Status",
-  newOrModified: "Novo ou Modificado",
-  type: "Tipo",
-  nature: "Natureza",
-  relationToRisk: "Relação com Risco",
-  responsible: "Responsável",
-  implementationMethod: "Método de Implantação",
-  macroSteps: "Macroetapas",
-  plannedStartDate: "Data de Início Prevista",
-  plannedEndDate: "Data de Fim Prevista",
-  actualEndDate: "Data de Fim Real",
-  involvedSectors: "Setores Envolvidos",
-  adequacyAnalysis: "Análise de Adequação",
-  history: "Histórico"
+    id: "ID",
+    riskId: "ID do Risco",
+    name: "Nome",
+    implemented: "Implementado",
+    status: "Status",
+    newOrModified: "Novo ou Modificado",
+    type: "Tipo",
+    nature: "Natureza",
+    relationToRisk: "Relação com Risco",
+    responsible: "Responsável",
+    implementationMethod: "Método de Implantação",
+    macroSteps: "Macroetapas",
+    plannedStartDate: "Data de Início Prevista",
+    plannedEndDate: "Data de Fim Prevista",
+    actualEndDate: "Data de Fim Real",
+    involvedSectors: "Setores Envolvidos",
+    adequacyAnalysis: "Análise de Adequação",
+    history: "Histórico"
 };

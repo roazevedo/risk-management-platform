@@ -1,21 +1,52 @@
-// app/processes/[processId]/risks/page.tsx (SERVER COMPONENT)
+// app/(dashboard)/processes/[processId]/risks/page.tsx
 
+import React from 'react';
 import RisksClientPage from './RisksClientPage';
+import { getRisksByProcessId } from '@/app/actions/risk.actions';
+import { prisma } from '@/app/prisma/prisma';
+import { redirect } from 'next/navigation';
 
-interface RisksPageProps {
-  params: {
+interface PageProps {
+  params: Promise<{
     processId: string;
-  };
+  }>;
 }
 
-export default async function RisksPage({ params }: RisksPageProps) {
+// SOLUÇÃO: Agora params é uma Promise que precisa ser aguardada (Next.js 15)
+export default async function RisksPage({ params }: PageProps) {
 
-    // 💡 SOLUÇÃO FINAL: Use 'await' para desestruturar 'params'
-    // Isso satisfaz o compilador que trata 'params' como uma Promise.
-    const { processId } = await params;
+  // CORREÇÃO: Aguarda a resolução da Promise de params
+  const resolvedParams = await params;
+  const rawProcessId = resolvedParams.processId;
 
-    // Passa o ID como prop simples (string) para o componente Cliente
-    return (
-        <RisksClientPage currentProcessId={processId} />
-    );
+  // 1. VALIDAÇÃO ROBUSTA: Limpa a string e verifica se o comprimento é zero
+  const processId = String(rawProcessId || '').trim();
+
+  if (processId.length === 0) {
+    // Redireciona se o parâmetro não foi resolvido pelo roteador
+    redirect('/processes');
+  }
+
+  // 2. BUSCA DE DADOS
+  const [processData, risksData] = await Promise.all([
+    prisma.process.findUnique({
+        where: { id: processId },
+        select: { name: true }
+    }),
+    getRisksByProcessId(processId)
+  ]);
+
+  // 3. VALIDAÇÃO DE EXISTÊNCIA
+  if (!processData) {
+    redirect('/processes');
+  }
+
+  // 4. CLIENT COMPONENT HYDRATION
+  return (
+    <RisksClientPage
+      currentProcessId={processId}
+      processName={processData.name}
+      initialRisks={risksData as any}
+    />
+  );
 }

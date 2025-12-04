@@ -1,29 +1,14 @@
-"use client";
-
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import ProcessManagement from '@/components/ProcessManagement';
-import { useData } from '@/contexts/DataContext';
+import { getProcesses } from '@/app/actions/process.actions';
+// Importamos o arquivo que acabamos de criar acima
+import ProcessesClientPage from './ProcessesClientPage';
 
-const ProcessesPage = () => {
-  const { processes, setProcesses } = useData();
-  const router = useRouter();
+export default async function ProcessesPage() {
+  // 1. Busca no Banco de Dados (Server Side)
+  const processes = await getProcesses();
 
-  const handleSelectProcess = (id: string) => {
-    router.push(`/processes/${id}/risks`);
-  };
-
-  if (!processes) {
-    return <div className="p-8 text-center text-gray-500">Carregando dados...</div>;
-  }
-
+  // 2. Renderiza a tela passando os dados
   return (
-    <ProcessManagement
-      processes={processes}
-      setProcesses={setProcesses}
-      onSelectProcess={handleSelectProcess}
-    />
+    <ProcessesClientPage initialProcesses={processes as any} />
   );
-};
-
-export default ProcessesPage;
+}
