@@ -31,11 +31,11 @@ export default function ProcessesClientPage({ initialProcesses }: ProcessesClien
     setIsModalOpen(false);
     setCurrentProcess(undefined);
    } else {
-    alert("Erro ao salvar processo.");
+    alert("Erro ao salvar processo: " + (result.error || "Erro desconhecido"));
    }
   } catch (error) {
-   console.error(error);
-   alert("Erro crítico ao salvar.");
+   console.error("Erro crítico:", error);
+   alert("Erro crítico ao salvar: " + (error instanceof Error ? error.message : "Erro desconhecido"));
   }
  };
 

@@ -68,7 +68,7 @@ export default function ProcessForm({ process, onSave, onCancel }: ProcessFormPr
             }
 
             const processToSave: Process = {
-                id: process?.id || '',
+                ...(process?.id ? { id: process.id } : {}), // Só inclui ID se existir
                 name: formData.name || '',
                 sector: formData.sector || '',
                 manager: formData.manager || '',
@@ -81,7 +81,7 @@ export default function ProcessForm({ process, onSave, onCancel }: ProcessFormPr
                 history: updatedHistory,
 
                 // Datas serão geradas pelo Prisma, não enviamos aqui
-            };
+            } as Process;
 
             await onSave(processToSave);
         } catch (error) {

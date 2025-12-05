@@ -33,7 +33,11 @@ export const historyEntrySchema = z.object({
  * - arrays: podem ser vazios
  */
 export const processSchema = z.object({
-  id: z.string().uuid().optional(), // UUID ou undefined (para novos processos)
+  id: z.union([
+    z.string().uuid(),
+    z.literal(''),
+    z.undefined()
+  ]).optional().transform(val => val === '' ? undefined : val), // UUID, string vazia (→ undefined) ou undefined
   name: z.string()
     .min(3, 'Nome deve ter no mínimo 3 caracteres')
     .max(200, 'Nome muito longo (máximo 200 caracteres)')

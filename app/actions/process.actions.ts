@@ -65,7 +65,7 @@ export async function saveProcess(data: Process) {
     const validatedData = processSchema.parse(data);
 
     const { id, history, ...rest } = validatedData;
-    const isNew = !id || id.startsWith('p'); // IDs temporários começam com 'p'
+    const isNew = !id || id === '' || id.startsWith('p'); // IDs temporários começam com 'p' ou string vazia
 
     let result;
 
