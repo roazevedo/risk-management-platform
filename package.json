@@ -8,7 +8,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:studio": "dotenv npx prisma studio"
+    "prisma:studio": "dotenv npx prisma studio",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -36,17 +39,23 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^22.19.1",
     "@types/pg": "^8.15.6",
     "@types/react": "^19.2.5",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/ui": "^4.0.15",
     "autoprefixer": "^10.4.22",
     "babel-plugin-react-compiler": "^1.0.0",
     "baseline-browser-mapping": "^2.8.32",
     "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",
+    "jsdom": "^27.2.0",
     "postcss": "^8.5.6",
     "prisma": "^7.0.1",
     "tailwindcss": "^4.1.17",
-    "typescript": "~5.8.2"
+    "typescript": "~5.8.2",
+    "vitest": "^4.0.15"
   }
 }

@@ -3,40 +3,92 @@
 import React, { useState } from 'react';
 import { Process, Risk } from '@/types';
 import { getInherentRiskLevel, getResidualRiskLevel } from '@/lib/domain/risk-classification';
-import { EyeIcon, ChevronLeftIcon } from './icons'; // Ajuste os imports conforme seu projeto
+import { EyeIcon, ChevronLeftIcon, Plus } from './icons';
+import { Modal } from '@/components/Modal';
 import RiskDetails from './RiskDetails';
+import RiskForm from './RiskForm';
 
 interface RiskManagementProps {
     process: Process;
     risks: Risk[];
     onSelectRisk: (id: string) => void;
-    onBack: () => void;
-    // Nova prop: O pai precisa saber quando o usuário quer editar um risco da tabela
-    onEditRisk: (risk: Risk) => void;
+    onSave: (risk: Risk) => Promise<void>;
+    onDelete: (id: string) => Promise<void>;
 }
 
 export default function RiskManagement({
     process,
     risks,
     onSelectRisk,
-    onBack,
-    onEditRisk
+    onSave,
+    onDelete
 }: RiskManagementProps) {
 
-    // Mantemos apenas a visualização de detalhes aqui (opcional, poderia subir também)
+    // Estado para modal de visualização de detalhes
     const [viewingRisk, setViewingRisk] = useState<Risk | null>(null);
+
+    // Estado para modal de edição/criação
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingRisk, setEditingRisk] = useState<Risk | undefined>(undefined);
 
     const handleViewDetails = (risk: Risk) => {
         setViewingRisk(risk);
     };
 
+    const handleAddNew = () => {
+        setEditingRisk(undefined);
+        setIsModalOpen(true);
+    };
+
+    const handleEdit = (risk: Risk) => {
+        setEditingRisk(risk);
+        setIsModalOpen(true);
+    };
+
+    const handleSaveInternal = async (riskData: Risk) => {
+        await onSave(riskData);
+        setIsModalOpen(false);
+        setEditingRisk(undefined);
+    };
+
+    const handleDeleteInternal = async (id: string) => {
+        if (confirm('Tem certeza que deseja excluir este risco?')) {
+            await onDelete(id);
+        }
+    };
+
     return (
         <div className="space-y-4">
+
+            {/* Cabeçalho com botão Novo Risco */}
+            <div className="flex justify-end">
+                <button
+                    onClick={handleAddNew}
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                >
+                    <Plus className="w-5 h-5" />
+                    Novo Risco
+                </button>
+            </div>
 
             {/* MODAL DE DETALHES (Visualização apenas) */}
             {viewingRisk && (
                 <RiskDetails risk={viewingRisk} onClose={() => setViewingRisk(null)} />
             )}
+
+            {/* MODAL DE EDIÇÃO/CRIAÇÃO */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title={editingRisk ? "Editar Risco" : "Novo Risco"}
+            >
+                <RiskForm
+                    risk={editingRisk}
+                    processId={process.id}
+                    onSave={handleSaveInternal}
+                    onCancel={() => setIsModalOpen(false)}
+                />
+            </Modal>
 
             {/* TABELA DE DADOS */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-x-auto border border-gray-200 dark:border-gray-700">
@@ -85,12 +137,18 @@ export default function RiskManagement({
                                             Ver Controles
                                         </button>
 
-                                        {/* AQUI: Ao clicar em editar, chamamos a função do PAI */}
                                         <button
-                                            onClick={() => onEditRisk(risk)}
+                                            onClick={() => handleEdit(risk)}
                                             className="text-indigo-600 hover:text-indigo-900 font-medium"
                                         >
                                             Editar
+                                        </button>
+
+                                        <button
+                                            onClick={() => handleDeleteInternal(risk.id)}
+                                            className="text-red-600 hover:text-red-900 font-medium"
+                                        >
+                                            Excluir
                                         </button>
                                     </td>
                                 </tr>
