@@ -150,7 +150,7 @@ export default function ControlManagement({ risk, controls, onSave, onDelete }: 
 
   return (
     <div className="space-y-6 relative">
-      {/* Barra de Busca e Filtro */}
+      {/* Barra de Busca, Filtro e Novo Controle */}
       <div className="flex gap-4 items-center">
         <div className="flex-1 relative">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -174,6 +174,14 @@ export default function ControlManagement({ risk, controls, onSave, onDelete }: 
               {activeFiltersCount}
             </span>
           )}
+        </button>
+
+        <button
+          onClick={handleAddNew}
+          className="flex items-center gap-2 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+        >
+          <Plus className="w-5 h-5" />
+          Novo Controle
         </button>
       </div>
 

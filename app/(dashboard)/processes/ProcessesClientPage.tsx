@@ -55,8 +55,8 @@ export default function ProcessesClientPage({ initialProcesses }: ProcessesClien
 
 
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Gerenciamento de Processos</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Gerenciamento de Processos</h1>
 
       <ProcessManagement
         processes={processes}
