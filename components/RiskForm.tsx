@@ -9,6 +9,7 @@ import {
     RISK_RESPONSES,
     PROBABILITY_IMPACT_SCALE
 } from '@/constants';
+import { getInherentRiskLevel, getResidualRiskLevel } from '@/lib/domain/risk-classification';
 
 interface RiskFormProps {
     risk?: Risk;
@@ -28,32 +29,6 @@ const calculateMaxDate = (startDateString: string, months: number): string => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-};
-
-// --- NOVA LÓGICA DE CLASSIFICAÇÃO DE RISCO ---
-const getRiskLevel = (score: number, isResidual: boolean) => {
-    // Se o score for 0 (estado inicial), retorna N/A
-    if (score === 0) return { label: 'N/A', color: 'bg-gray-400' };
-
-    // Escala do Risco Inerente (1-25, valores inteiros)
-    if (!isResidual) {
-        if (score >= 16) return { label: 'Crítico', color: 'bg-red-600' };
-        if (score >= 11) return { label: 'Alto', color: 'bg-orange-500' };
-        if (score >= 8) return { label: 'Médio', color: 'bg-yellow-500' };
-        if (score >= 4) return { label: 'Baixo', color: 'bg-green-500' };
-        if (score >= 1) return { label: 'Muito Baixo', color: 'bg-green-400' };
-        return { label: 'N/A', color: 'bg-gray-400' };
-    }
-
-    // Escala do Risco Residual (0-25, valores float, usando Math.round para precisão do .1)
-    const floatScore = Math.round(score * 10) / 10;
-
-    if (floatScore > 15.0) return { label: 'Crítico', color: 'bg-red-600' };
-    if (floatScore > 10.0) return { label: 'Alto', color: 'bg-orange-500' };
-    if (floatScore > 7.0) return { label: 'Médio', color: 'bg-yellow-500' };
-    if (floatScore > 3.0) return { label: 'Baixo', color: 'bg-green-500' };
-    if (floatScore >= 0) return { label: 'Muito Baixo', color: 'bg-green-400' };
-    return { label: 'N/A', color: 'bg-gray-400' };
 };
 
 export default function RiskForm({ risk, processId, onSave, onCancel }: RiskFormProps) {
@@ -262,9 +237,9 @@ export default function RiskForm({ risk, processId, onSave, onCancel }: RiskForm
     const isAssessmentStarted = (formData.probability > 0 || formData.impact > 0);
 
     // Nível e Cor para Inerente
-    const inherentLevel = getRiskLevel(formData.inherentRisk || 0, false);
+    const inherentLevel = getInherentRiskLevel(formData.inherentRisk || 0);
     // Nível e Cor para Residual
-    const residualLevel = getRiskLevel(formData.residualRisk || 0, true);
+    const residualLevel = getResidualRiskLevel(formData.residualRisk || 0);
 
     // Condição para bloquear a Resposta Sugerida
     const shouldDisableSuggestedResponse = isMonitoringOnly && isAssessmentStarted;

@@ -11,14 +11,14 @@ interface ProcessManagementProps {
   processes: Process[];
   setProcesses?: React.Dispatch<React.SetStateAction<Process[]>>;
   onSelectProcess: (id: string) => void;
-  superSalvar: (process: Process) => Promise<void>;
+  onSave: (process: Process) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
 export default function ProcessManagement({
   processes,
   onSelectProcess,
-  superSalvar,
+  onSave,
   onDelete
 }: ProcessManagementProps) {
 
@@ -49,9 +49,7 @@ export default function ProcessManagement({
     };
 
     const handleSaveInternal = async (processData: Process) => {
-      if (superSalvar) {
-        await superSalvar(processData);
-      }
+      await onSave(processData);
       setIsModalOpen(false);
       setEditingProcess(undefined);
     };

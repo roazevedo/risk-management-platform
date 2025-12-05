@@ -11,6 +11,7 @@ import {
     CheckCircle2,
     XCircle
 } from 'lucide-react';
+import { getResidualRiskLevel } from '@/lib/domain/risk-classification';
 
 interface RiskDetailsProps {
     risk: Risk;
@@ -24,10 +25,19 @@ export default function RiskDetails({ risk, onClose }: RiskDetailsProps) {
         return new Date(dateString).toLocaleDateString('pt-BR');
     };
 
-    const getRiskColor = (value: number) => {
-        if (value >= 15) return 'text-red-600 bg-red-100 border-red-200';
-        if (value >= 8) return 'text-yellow-600 bg-yellow-100 border-yellow-200';
-        return 'text-green-600 bg-green-100 border-green-200';
+    const residualRiskLevel = getResidualRiskLevel(risk.residualRisk);
+
+    // Mapear cores do domain para classes Tailwind completas
+    const getRiskColorClasses = (color: string) => {
+        const colorMap: Record<string, string> = {
+            'bg-red-600': 'text-red-600 bg-red-100 border-red-200',
+            'bg-orange-500': 'text-orange-600 bg-orange-100 border-orange-200',
+            'bg-yellow-500': 'text-yellow-600 bg-yellow-100 border-yellow-200',
+            'bg-green-500': 'text-green-600 bg-green-100 border-green-200',
+            'bg-green-400': 'text-green-600 bg-green-100 border-green-200',
+            'bg-gray-400': 'text-gray-600 bg-gray-100 border-gray-200',
+        };
+        return colorMap[color] || 'text-gray-600 bg-gray-100 border-gray-200';
     };
 
     const BooleanStatus = ({ label, value }: { label: string, value: boolean }) => (
@@ -51,7 +61,7 @@ export default function RiskDetails({ risk, onClose }: RiskDetailsProps) {
         <div className="space-y-6 max-h-[70vh] overflow-y-auto p-2 custom-scrollbar">
 
             <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-700">
-                <div className={`p-3 rounded-full ${getRiskColor(risk.residualRisk)} bg-opacity-20`}>
+                <div className={`p-3 rounded-full ${getRiskColorClasses(residualRiskLevel.color)} bg-opacity-20`}>
                     <AlertTriangle className="w-6 h-6" />
                 </div>
                 <div>
@@ -83,7 +93,7 @@ export default function RiskDetails({ risk, onClose }: RiskDetailsProps) {
                     <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold">Risco Inerente</span>
                     <p className="text-2xl font-bold text-gray-700 dark:text-gray-200">{risk.inherentRisk}</p>
                 </div>
-                <div className={`p-3 rounded-lg text-center border ${getRiskColor(risk.residualRisk)} bg-opacity-10 border-opacity-50`}>
+                <div className={`p-3 rounded-lg text-center border ${getRiskColorClasses(residualRiskLevel.color)} bg-opacity-10 border-opacity-50`}>
                     <span className="text-xs uppercase font-bold opacity-80">Risco Residual</span>
                     <p className="text-2xl font-bold">{risk.residualRisk}</p>
                 </div>

@@ -60,8 +60,8 @@ export default function ProcessesClientPage({ initialProcesses }: ProcessesClien
 
       <ProcessManagement
         processes={processes}
-        onSelectProcess={handleSelectProcess} // A função corrigida é passada aqui
-        superSalvar={handleSave}
+        onSelectProcess={handleSelectProcess}
+        onSave={handleSave}
         onDelete={handleDelete}
         />
     </div>

@@ -1,7 +1,8 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import type { Process, Risk, Control } from '../types';
-import { getInherentRiskLevel, getResidualRiskLevel } from '@/lib/risk-utils';
+import { getInherentRiskLevel, getResidualRiskLevel, getInherentRiskBucketValue } from '@/lib/domain/risk-classification';
+import { calculateDashboardMetrics, DASHBOARD_CHART_COLORS } from '@/lib/domain/dashboard-metrics';
 import { RiskIcon, ProcessIcon, ControlIcon } from './icons';
 
 interface DashboardProps {
@@ -37,15 +38,6 @@ const controlFactors = [
     { label: 'FRACO', value: 0.8 },
     { label: 'INEFICAZ', value: 1.0 },
 ];
-
-const getInherentRiskBucketValue = (score: number): number => {
-    if (score > 15) return 25;
-    if (score > 10) return 15;
-    if (score > 7) return 10;
-    if (score > 3) return 7;
-    return 3;
-};
-
 
 const ResidualRiskMatrix: React.FC<{ risks: Risk[] }> = ({ risks }) => {
     const riskCounts = React.useMemo(() => {
@@ -106,29 +98,11 @@ const ResidualRiskMatrix: React.FC<{ risks: Risk[] }> = ({ risks }) => {
 
 export default function Dashboard({ processes, risks, controls }: DashboardProps) {
 
-    const riskLevelData = risks.reduce((acc, risk) => {
-        const { level } = getInherentRiskLevel(risk.inherentRisk);
-        const existing = acc.find(item => item.name === level);
-        if (existing) {
-            existing.riscos++;
-        } else {
-            acc.push({ name: level, riscos: 1 });
-        }
-        return acc;
-    }, [] as { name: string; riscos: number }[]);
+    // Calcular métricas usando lib/domain
+    const metrics = calculateDashboardMetrics(processes, risks, controls);
+    const { riskLevelData, controlStatusData } = metrics;
 
-    const controlStatusData = controls.reduce((acc, control) => {
-        const status = control.implemented ? 'Implementado' : 'Não Implementado';
-        const existing = acc.find(item => item.name === status);
-        if (existing) {
-            existing.value++;
-        } else {
-            acc.push({ name: status, value: 1 });
-        }
-        return acc;
-    }, [] as { name: string; value: number }[]);
-
-    const COLORS = ['#4ade80', '#facc15']; // Green, Yellow
+    const COLORS = DASHBOARD_CHART_COLORS.PRIMARY;
 
     return (
         <div className="space-y-6">

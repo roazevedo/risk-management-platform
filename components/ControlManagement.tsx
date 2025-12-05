@@ -7,6 +7,7 @@ import { Modal } from '@/components/Modal';
 import ControlForm from '@/components/ControlForm';
 import FilterSidebar from '@/components/FilterSidebar';
 import { CONTROL_TYPES, CONTROL_NATURES, CONTROL_RELATIONS } from '@/constants';
+import { calculateControlStatus } from '@/lib/domain/control-status';
 
 interface ControlManagementProps {
   risk: Risk;
@@ -47,54 +48,25 @@ export default function ControlManagement({ risk, controls, onSave, onDelete }: 
     await onDelete(id);
   };
 
-  // Função para obter badge de status
+  // Helper para mapear iconName para componente JSX
+  const getIconComponent = (iconName: string) => {
+    const icons: Record<string, React.ReactNode> = {
+      'CheckCircle': <CheckCircle className="w-4 h-4" />,
+      'Clock': <Clock className="w-4 h-4" />,
+      'XCircle': <XCircle className="w-4 h-4" />,
+      'AlertCircle': <AlertCircle className="w-4 h-4" />,
+    };
+    return icons[iconName] || <Clock className="w-4 h-4" />;
+  };
+
+  // Função para obter badge de status usando lib/domain
   const getStatusBadge = (control: Control) => {
-    if (control.implemented) {
-      return {
-        icon: <CheckCircle className="w-4 h-4" />,
-        label: 'Implementado',
-        className: 'bg-green-100 text-green-700 border-green-300',
-        status: 'on-time'
-      };
-    }
-
-    if (!control.plannedEndDate) {
-      return {
-        icon: <Clock className="w-4 h-4" />,
-        label: 'Pendente',
-        className: 'bg-gray-100 text-gray-600 border-gray-300',
-        status: 'on-time'
-      };
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const endDate = new Date(control.plannedEndDate);
-    endDate.setHours(0, 0, 0, 0);
-    const diffTime = endDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) {
-      return {
-        icon: <XCircle className="w-4 h-4" />,
-        label: `Atrasado (${Math.abs(diffDays)}d)`,
-        className: 'bg-red-100 text-red-700 border-red-300',
-        status: 'overdue'
-      };
-    } else if (diffDays <= 30) {
-      return {
-        icon: <AlertCircle className="w-4 h-4" />,
-        label: `${diffDays} dias restantes`,
-        className: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-        status: 'near-due'
-      };
-    }
-
+    const statusResult = calculateControlStatus(control.plannedEndDate, control.implemented, control.actualEndDate);
     return {
-      icon: <Clock className="w-4 h-4" />,
-      label: `${diffDays} dias restantes`,
-      className: 'bg-blue-100 text-blue-700 border-blue-300',
-      status: 'on-time'
+      icon: getIconComponent(statusResult.iconName),
+      label: statusResult.label,
+      className: statusResult.className,
+      status: statusResult.status
     };
   };
 

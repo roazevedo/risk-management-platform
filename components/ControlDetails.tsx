@@ -2,40 +2,19 @@ import React from 'react';
 import type { Control, ControlStatus } from '../types';
 import { Modal } from './Modal';
 import { DetailsSection, DetailItem } from './DetailsDisplay';
+import { calculateControlStatus } from '@/lib/domain/control-status';
 
 interface ControlDetailsProps {
     control: Control;
     onClose: () => void;
 }
 
-const getStatusInfo = (plannedEndDate: string, implemented: boolean, actualEndDate: string): { label: string, color: string } => {
-    if (implemented) {
-        return { label: 'Implementado', color: 'bg-green-500' };
-    }
-    if (!plannedEndDate) {
-        return { label: 'Pendente', color: 'bg-gray-500' };
-    }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const endDate = new Date(plannedEndDate + 'T00:00:00');
-    const timeDiff = endDate.getTime() - today.getTime();
-    const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    if (dayDiff < 0) {
-        return { label: 'Atrasado', color: 'bg-red-500' };
-    }
-    if (dayDiff <= 30) {
-        return { label: 'Vencimento Próximo', color: 'bg-yellow-500' };
-    }
-    return { label: 'Em Dia', color: 'bg-blue-500' };
-};
-
 const formatDateForDetails = (dateString: string) => dateString ? new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A';
 const formatTimestamp = (dateString: string) => new Date(dateString).toLocaleString('pt-BR');
 
 
 export const ControlDetails: React.FC<ControlDetailsProps> = ({ control, onClose }) => {
-    const statusInfo = getStatusInfo(control.plannedEndDate, control.implemented, control.actualEndDate);
+    const statusInfo = calculateControlStatus(control.plannedEndDate, control.implemented, control.actualEndDate);
 
     return (
         <Modal isOpen={true} onClose={onClose} title={`Detalhes do Controle: ${control.name}`}>
