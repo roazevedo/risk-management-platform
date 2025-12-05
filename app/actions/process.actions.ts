@@ -92,7 +92,7 @@ export async function saveProcess(data: Process) {
     }
 
     // 2. Revalidar cache
-    revalidateTag('process-list');
+    revalidateTag('process-list', '');
 
     return { success: true, id: result.id };
   } catch (error) {
@@ -101,7 +101,7 @@ export async function saveProcess(data: Process) {
 
     // Zod errors são sanitizados
     if (error instanceof z.ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         error: `Dados inválidos: ${firstError.message}`
@@ -152,7 +152,7 @@ export async function deleteProcess(id: string) {
     await prisma.process.delete({ where: { id } });
 
     // 3. Revalidar cache
-    revalidateTag('process-list');
+    revalidateTag('process-list', '');
 
     return { success: true };
   } catch (error) {

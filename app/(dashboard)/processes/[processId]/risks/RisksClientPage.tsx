@@ -24,8 +24,12 @@ export default function RisksClientPage({ currentProcessId, initialRisks, proces
     router.push(`/processes/${currentProcessId}/risks/${riskId}/controls`);
   };
 
-  // --- SALVAR RISCO ---
-  const handleSaveRisk = async (risk: Risk) => {
+  const handleBack = () => {
+    router.push('/processes');
+  };
+
+  // --- EDITAR RISCO ---
+  const handleEditRisk = async (risk: Risk) => {
     try {
       // Garante que o ID do processo está vinculado
       const riskToSave = { ...risk, processId: currentProcessId };
@@ -42,41 +46,26 @@ export default function RisksClientPage({ currentProcessId, initialRisks, proces
     }
   };
 
-  // --- DELETAR RISCO ---
-  const handleDeleteRisk = async (id: string) => {
-    if (confirm("Tem certeza que deseja excluir este risco?")) {
-      const result = await deleteRisk(id, currentProcessId);
-      if (result.success) {
-        router.refresh();
-      } else {
-        alert("Erro ao excluir.");
-      }
-    }
+  // Criar objeto Process mockado para RiskManagement
+  const mockProcess = {
+    id: currentProcessId,
+    name: processName,
+    sector: '',
+    manager: '',
+    responsibleServers: [],
+    legalBasis: '',
+    systemsUsed: [],
+    stakeholders: [],
+    history: [],
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <button
-            onClick={() => router.push('/processes')}
-            className="text-sm text-gray-500 hover:text-gray-700 mb-1"
-          >
-            ← Voltar para Processos
-          </button>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-            Gerenciar Riscos: <span className="text-indigo-600">{processName}</span>
-          </h1>
-        </div>
-      </div>
-
-      <RiskManagement
-        processId={currentProcessId}
-        risks={localRisks}
-        superSalvar={handleSaveRisk}
-        onDelete={handleDeleteRisk}
-        onSelectRisk={handleSelectRisk}
-      />
-    </div>
+    <RiskManagement
+      process={mockProcess}
+      risks={localRisks}
+      onSelectRisk={handleSelectRisk}
+      onBack={handleBack}
+      onEditRisk={handleEditRisk}
+    />
   );
 }

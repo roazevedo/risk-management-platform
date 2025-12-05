@@ -104,7 +104,7 @@ export function useRiskCalculations(formData: Partial<Risk>): RiskCalculationsRe
     const inherentRisk = probability * impact;
 
     // 2. Calcular FAC (Fator de Avaliação de Controles)
-    let calculatedFac = FAC_VALUES.INEFFECTIVE; // Padrão: 1.0 (sem redução)
+    let calculatedFac: number = FAC_VALUES.INEFFECTIVE; // Padrão: 1.0 (sem redução)
 
     if (formData.controlsExist) {
       if (formData.isControlEffective) {
@@ -215,7 +215,7 @@ export function calculateRiskValues(risk: Partial<Risk>): RiskCalculationsResult
   const impact = Number(risk.impact) || 0;
   const inherentRisk = probability * impact;
 
-  let calculatedFac = FAC_VALUES.INEFFECTIVE;
+  let calculatedFac: number = FAC_VALUES.INEFFECTIVE;
 
   if (risk.controlsExist) {
     if (risk.isControlEffective) {

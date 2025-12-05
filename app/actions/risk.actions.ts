@@ -104,8 +104,8 @@ export async function saveRisk(data: Risk) {
     }
 
     // 3. Revalidar caches relevantes
-    revalidateTag(`risks-for-${processId}`);
-    revalidateTag('process-list'); // Atualizar contagem de riscos
+    revalidateTag(`risks-for-${processId}`, '');
+    revalidateTag('process-list', ''); // Atualizar contagem de riscos
 
     return { success: true, id: result.id };
   } catch (error) {
@@ -113,7 +113,7 @@ export async function saveRisk(data: Risk) {
     console.error("[SERVER] Erro ao salvar risco:", error);
 
     if (error instanceof z.ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         error: `Dados inválidos: ${firstError.message}`
@@ -162,8 +162,8 @@ export async function deleteRisk(riskId: string, processId: string) {
     await prisma.risk.delete({ where: { id: riskId } });
 
     // 3. Revalidar caches
-    revalidateTag(`risks-for-${processId}`);
-    revalidateTag('process-list');
+    revalidateTag(`risks-for-${processId}`, '');
+    revalidateTag('process-list', '');
 
     return { success: true };
   } catch (error) {

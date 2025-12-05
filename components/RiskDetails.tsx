@@ -14,9 +14,10 @@ import {
 
 interface RiskDetailsProps {
     risk: Risk;
+    onClose: () => void;
 }
 
-export default function RiskDetails({ risk }: RiskDetailsProps) {
+export default function RiskDetails({ risk, onClose }: RiskDetailsProps) {
 
     const formatDate = (dateString: string) => {
         if (!dateString) return '-';

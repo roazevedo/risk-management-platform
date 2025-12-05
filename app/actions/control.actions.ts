@@ -105,8 +105,8 @@ export async function saveControl(controlData: Control, processId: string) {
     }
 
     // 3. Revalidar caches relevantes
-    revalidateTag(`controls-for-${riskId}`);
-    revalidateTag(`risks-for-${processId}`);
+    revalidateTag(`controls-for-${riskId}`, '');
+    revalidateTag(`risks-for-${processId}`, '');
 
     return { success: true, id: result.id };
   } catch (error) {
@@ -114,7 +114,7 @@ export async function saveControl(controlData: Control, processId: string) {
     console.error("[SERVER] Erro ao salvar controle:", error);
 
     if (error instanceof z.ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         error: `Dados inválidos: ${firstError.message}`
@@ -167,8 +167,8 @@ export async function deleteControl(
     await prisma.control.delete({ where: { id: controlId } });
 
     // 3. Revalidar caches
-    revalidateTag(`controls-for-${riskId}`);
-    revalidateTag(`risks-for-${processId}`);
+    revalidateTag(`controls-for-${riskId}`, '');
+    revalidateTag(`risks-for-${processId}`, '');
 
     return { success: true };
   } catch (error) {
