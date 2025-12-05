@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Process, Risk } from '@/types';
 import { getInherentRiskLevel, getResidualRiskLevel } from '@/lib/domain/risk-classification';
-import { EyeIcon, ChevronLeftIcon, Plus } from './icons';
+import { EyeIcon, ChevronLeftIcon, Plus, SearchIcon } from './icons';
 import { Modal } from '@/components/Modal';
 import RiskDetails from './RiskDetails';
 import RiskForm from './RiskForm';
@@ -31,6 +31,9 @@ export default function RiskManagement({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRisk, setEditingRisk] = useState<Risk | undefined>(undefined);
 
+    // Estado para busca
+    const [searchTerm, setSearchTerm] = useState('');
+
     const handleViewDetails = (risk: Risk) => {
         setViewingRisk(risk);
     };
@@ -57,11 +60,27 @@ export default function RiskManagement({
         }
     };
 
+    // Filtrar riscos pela busca
+    const filteredRisks = risks.filter(risk =>
+        risk.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        risk.type.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="space-y-4">
 
-            {/* Cabeçalho com botão Novo Risco */}
-            <div className="flex justify-end">
+            {/* Cabeçalho com busca e botão Novo Risco */}
+            <div className="flex justify-between items-center gap-4">
+                <div className="relative flex-1 max-w-md">
+                    <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Buscar risco..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9 pr-4 py-2 border rounded-md w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    />
+                </div>
                 <button
                     onClick={handleAddNew}
                     className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
@@ -72,9 +91,15 @@ export default function RiskManagement({
             </div>
 
             {/* MODAL DE DETALHES (Visualização apenas) */}
-            {viewingRisk && (
-                <RiskDetails risk={viewingRisk} onClose={() => setViewingRisk(null)} />
-            )}
+            <Modal
+                isOpen={!!viewingRisk}
+                onClose={() => setViewingRisk(null)}
+                title="Detalhes do Risco"
+            >
+                {viewingRisk && (
+                    <RiskDetails risk={viewingRisk} onClose={() => setViewingRisk(null)} />
+                )}
+            </Modal>
 
             {/* MODAL DE EDIÇÃO/CRIAÇÃO */}
             <Modal
@@ -102,7 +127,7 @@ export default function RiskManagement({
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                        {risks.map(risk => {
+                        {filteredRisks.map(risk => {
                             const inherentRiskDetails = getInherentRiskLevel(risk.inherentRisk);
                             const residualRiskDetails = getResidualRiskLevel(risk.residualRisk);
 
@@ -160,7 +185,7 @@ export default function RiskManagement({
 
             {/* Rodapé da tabela */}
             <div className="text-sm text-gray-500 dark:text-gray-400 px-2">
-                Mostrando {risks.length} riscos
+                Mostrando {filteredRisks.length} de {risks.length} riscos
             </div>
         </div>
     );
