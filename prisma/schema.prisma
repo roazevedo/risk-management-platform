@@ -1,51 +1,73 @@
+
 generator client {
   provider = "prisma-client"
-  output   = "../lib/prisma/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String? // Hash da senha
+  name     String
+  role     String  @default("user") // "admin" ou "user"
+  active   Boolean @default(true)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  emailVerified Boolean   @default(false)
+  image         String?
+  sector        String?   // Setor do usuário (ex: CG/ADS/GRH)
+  registration  String?   // Matrícula do servidor
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
+}
+
 model Process {
-  id                 String   @id @default(uuid())
-  name               String
-  sector             String
-  manager            String
+  id      String @id @default(uuid())
+  name    String
+  sector  String
+  manager String
 
   // Arrays de Strings (Postgres aceita nativamente)
   responsibleServers String[]
 
-  legalBasis         String?
-  systemsUsed        String[]
-  stakeholders       String[]
+  legalBasis   String?
+  systemsUsed  String[]
+  stakeholders String[]
 
   // Histórico flexível (guarda o array de objetos do log)
-  history            Json?
+  history Json?
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relacionamento: Um Processo tem vários Riscos
-  risks              Risk[]
+  risks Risk[]
 }
 
 // 2. MODELO DE RISCO
+
 model Risk {
-  id                       String   @id @default(uuid())
+  id String @id @default(uuid())
 
   // Relacionamento com Processo
-  processId                String
-  process                  Process  @relation(fields: [processId], references: [id], onDelete: Cascade)
+  processId String
+  process   Process @relation(fields: [processId], references: [id], onDelete: Cascade)
 
-  name                     String
-  identificationDate       String   // Mantido como String conforme seu mock ("YYYY-MM-DD")
-  type                     String
-  association              String
-  causes                   String
-  consequences             String
+  name               String
+  identificationDate String // Mantido como String conforme seu mock ("YYYY-MM-DD")
+  type               String
+  association        String
+  causes             String
+  consequences       String
 
-  dimensions               String[] // Array (ex: ['Operacional', 'Imagem'])
+  dimensions String[] // Array (ex: ['Operacional', 'Imagem'])
 
   // Dados Quantitativos
   probability              Int
@@ -53,56 +75,105 @@ model Risk {
   impact                   Int
   impactJustification      String?
 
-  inherentRisk             Float    // Float para permitir cálculos precisos
+  inherentRisk Float // Float para permitir cálculos precisos
 
   // Controles e Avaliação
-  controlsExist            Boolean  @default(false)
-  isControlEffective       Boolean  @default(false)
-  isControlProportional    Boolean  @default(false)
-  isControlReasonable      Boolean  @default(false)
-  isControlAdequate        Boolean  @default(false)
+  controlsExist         Boolean @default(false)
+  isControlEffective    Boolean @default(false)
+  isControlProportional Boolean @default(false)
+  isControlReasonable   Boolean @default(false)
+  isControlAdequate     Boolean @default(false)
 
-  fac                      Float    // Fator de Avaliação (ex: 0.4)
-  residualRisk             Float    // Risco Residual (ex: 8.0)
-  suggestedResponse        String
-  maxImplementationDate    String?  // String ISO
-  isLgpdRelated            Boolean  @default(false)
+  fac                   Float // Fator de Avaliação (ex: 0.4)
+  residualRisk          Float // Risco Residual (ex: 8.0)
+  suggestedResponse     String
+  maxImplementationDate String? // String ISO
+  isLgpdRelated         Boolean @default(false)
 
-  history                  Json?
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
+  history   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relacionamento: Um Risco tem vários Controles
-  controls                 Control[]
+  controls Control[]
 }
 
 // 3. MODELO DE CONTROLE
+
 model Control {
-  id                   String   @id @default(uuid())
+  id String @id @default(uuid())
 
   // Relacionamento com Risco
-  riskId               String
-  risk                 Risk     @relation(fields: [riskId], references: [id], onDelete: Cascade)
+  riskId String
+  risk   Risk   @relation(fields: [riskId], references: [id], onDelete: Cascade)
 
   name                 String
-  implemented          Boolean  @default(false)
-  status               String   // ex: "on-time", "near-due"
-  newOrModified        String   // ex: "Novo"
-  type                 String   // ex: "Preventivo"
-  nature               String   // ex: "Automatizado"
-  relationToRisk       String   // ex: "Direto"
-  responsible          String
-  implementationMethod String
-  macroSteps           String
+  implemented          Boolean @default(false)
+  status               String // ex: "on-time", "near-due"
+  newOrModified        String // ex: "Novo"
+  type                 String // ex: "Preventivo"
+  nature               String // ex: "Automatizado"
+  relationToRisk       String // ex: "Direto"
+  responsible          String? // Agora opcional
+  implementationMethod String? // Agora opcional
+  macroSteps           String? // Agora opcional
 
-  plannedStartDate     String?
-  plannedEndDate       String?
-  actualEndDate        String?
+  plannedStartDate String?
+  plannedEndDate   String?
+  actualEndDate    String?
 
-  involvedSectors      String[] // Array (ex: ['TI', 'Operações'])
-  adequacyAnalysis     String?
+  involvedSectors  String[] // Array (ex: ['TI', 'Operações'])
+  adequacyAnalysis String?
 
-  history              Json?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  history   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
