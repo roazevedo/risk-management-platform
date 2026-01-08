@@ -8,7 +8,7 @@ import {
     CONTROL_RELATIONS,
     CONTROL_STATUS,
     CONTROL_NEW_MODIFIED
-} from '@/constants'; // Certifique-se que o caminho aponta para o constants.ts novo
+} from '@/src/constants/constants'; // Certifique-se que o caminho aponta para o constants.ts novo
 
 // --- ENUMS GERAIS ---
 export enum View {
